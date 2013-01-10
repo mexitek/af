@@ -199,7 +199,37 @@ module VMC::Cli
       at_exit { @local_tunnel_thread.kill }
     end
 
+    def write_vcap_variable_locally(info, port, service)
+      # Collect our variables
+      user = info['user'] || info['username']
+      port = port
+      host = "127.0.0.1"
+      pass = info['password']
+      name = info['name']
 
+      # Create service key. Mimicing VCAP_SERVICES ENV variable
+      serviceKey = service[:vendor] + "-" + service[:version]
+
+      # Create our, soon to be, JSON object
+      json = {}
+      json[serviceKey] = [nil]
+      json[serviceKey][0] = {
+        :credentials => {
+          :name => name,
+          :port => port,
+          :password => pass,
+          :user => user,
+          :username => user,
+          :host => host,
+          :hostname => host
+        }
+      }
+
+      # Show the user that VCAP_SERVICES JSON data will be available
+      display "Writing JSON DB Info to /etc/af_vcap_services".green
+      system("sudo echo '"+json.to_hash.to_json+"' > /etc/af_vcap_services")
+
+    end
 
     def pick_tunnel_port(port)
       original = port
