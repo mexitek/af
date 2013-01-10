@@ -228,7 +228,6 @@ module VMC::Cli
       # Show the user that VCAP_SERVICES JSON data will be available
       display "Writing JSON DB Info to /etc/af_vcap_services".green
       system("sudo echo '"+json.to_hash.to_json+"' > /etc/af_vcap_services")
-
     end
 
     def pick_tunnel_port(port)
